@@ -116,7 +116,7 @@ public class Upload extends AbstractApiBase {
         FileInputStream is = null;
         long contentLength =0;
         try {
-            java.io.File file = new java.io.File("wdtTestFile.zip");
+            java.io.File file = new java.io.File("src/main/resources/wdtTestFile.zip");
             is = new FileInputStream(file);
             contentLength = file.length();
             int bufferSize = 10000;

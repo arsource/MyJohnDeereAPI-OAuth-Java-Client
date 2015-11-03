@@ -17,4 +17,8 @@ public class Permissions {
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
     }
+
+    public void addPermission(Permission permission) {
+        permissions.add(permission);
+    }
 }

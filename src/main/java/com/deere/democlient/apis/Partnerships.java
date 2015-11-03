@@ -30,7 +30,6 @@ public class Partnerships extends AbstractApiBase {
         final RestResponse apiCatalogResponse = apiCatalogRequest.fetchResponse();
 
         Partnerships partnerships = new Partnerships();
-        apiCatalog = partnerships.linksFrom(partnerships.read(apiCatalogResponse).as(ApiCatalog.class));
         partnerships.getCurrentUser();
         partnerships.getUserOrganizations();
         partnerships.setupPartnership();
@@ -161,11 +160,4 @@ public class Partnerships extends AbstractApiBase {
         final RestResponse deleteResponse = deletePartnershipRequest.fetchResponse();
         System.out.println("New Partnership Delete Done with code : " + deleteResponse.getResponseCode());
     }
-
-    private ObjectMapper initObjectMapper() {
-        final ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.getSerializationConfig().setSerializationInclusion(NON_EMPTY);
-        return objectMapper;
-    }
-
 }

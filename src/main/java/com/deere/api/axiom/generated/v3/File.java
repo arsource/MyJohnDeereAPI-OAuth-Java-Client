@@ -91,11 +91,11 @@ public class File extends Resource {
         this.shared = shared;
     }
 
-    public Boolean get_new() {
+    public Boolean getNew() {
         return _new;
     }
 
-    public void set_new(Boolean _new) {
+    public void setNew(Boolean _new) {
         this._new = _new;
     }
 

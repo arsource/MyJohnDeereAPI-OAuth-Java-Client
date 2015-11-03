@@ -24,7 +24,6 @@ public class MaMos extends AbstractApiBase {
 
         final RestResponse apiCatalogResponse = apiCatalogRequest.fetchResponse();
         MaMos maMos = new MaMos();
-        apiCatalog = maMos.linksFrom(maMos.read(apiCatalogResponse).as(ApiCatalog.class));
         maMos.getCurrentUser();
         maMos.getUserOrganizations();
         maMos.getMachinesByOrg();

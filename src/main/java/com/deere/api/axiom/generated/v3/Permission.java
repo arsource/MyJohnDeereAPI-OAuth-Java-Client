@@ -6,8 +6,17 @@ package com.deere.api.axiom.generated.v3;
 public class Permission extends Resource {
 
     private final static long serialVersionUID = 1L;
+    protected String permissionId;
     protected String type;
     protected String status;
+
+    public String getPermissionId() {
+        return permissionId;
+    }
+
+    public void setPermissionId(String permissionId) {
+        this.permissionId = permissionId;
+    }
 
     public String getType() {
         return type;

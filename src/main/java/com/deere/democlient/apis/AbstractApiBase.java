@@ -1,5 +1,6 @@
 package com.deere.democlient.apis;
 
+import com.deere.api.axiom.generated.v3.ApiCatalog;
 import com.deere.api.axiom.generated.v3.File;
 import com.deere.api.axiom.generated.v3.Link;
 import com.deere.api.axiom.generated.v3.Resource;
@@ -22,19 +23,30 @@ import java.util.regex.Pattern;
 import static com.deere.axiom.MatcherFactory.*;
 import static com.deere.rest.RestRequestBuilder.request;
 import static java.util.UUID.randomUUID;
+import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_EMPTY;
 
 public abstract class AbstractApiBase {
 
     private static final ClassLoader CLASS_LOADER = AbstractApiBase.class.getClassLoader();
 
-    protected final static String baseUri = "https://apicert.soa-proxy.deere.com/platform/";
+    public final static String baseUri = "https://apicert.soa-proxy.deere.com/platform/";
     protected final static String basePartnershipUri = "https://apicert.soa-proxy.deere.com/platform/partnerships";
     protected final static String V3_CONTENT_TYPE = "application/vnd.deere.axiom.v3+json";
     protected final static String V3_ACCEPTABLE_TYPE = "application/vnd.deere.axiom.v3+json";
 
     protected final Pattern contentDispositionPattern = Pattern.compile("\\s*attachment;\\s*filename=(\"?)([^\"]+)\\1");
     protected final String filename = randomUUID().toString() + ".zip";
-    protected static Map<String, Link> apiCatalog;
+    protected Map<String, Link> apiCatalog = initializeApiCatalog();
+
+    private Map<String,Link> initializeApiCatalog() {
+        final RestRequest apiCatalogRequest = oauthRequestTo(baseUri)
+                .method("GET")
+                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
+                .build();
+
+        final RestResponse apiCatalogResponse = apiCatalogRequest.fetchResponse();
+        return linksFrom(read(apiCatalogResponse).as(ApiCatalog.class));
+    }
 
     protected ContentExchanger read(final RestResponse restResponse) {
         final ContentExchanger read = ContentExchanger.read(restResponse);
@@ -150,12 +162,28 @@ public abstract class AbstractApiBase {
         //assertThat("DELETE response code", deleteResponse.getResponseCode().series(), isEqualTo(SUCCESSFUL));
     }
 
-    protected ImmutableMap<String, Link> linksFrom(final Resource resource) {
+    public ImmutableMap<String, Link> linksFrom(final Resource resource) {
         return Maps.uniqueIndex(resource.getLinks(),
                                 new Function<Link, String>() {
                                     @Override public String apply(final Link input) {
                                         return input.getRel();
                                     }
                                 });
+    }
+
+    protected byte[] getBytesForObject(Object object) {
+        try {
+            final ObjectMapper objectMapper = initObjectMapper();
+            return objectMapper.writeValueAsBytes(object);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to marshall the request input");
+        }
+    }
+
+    @Deprecated
+    protected ObjectMapper initObjectMapper() {
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.getSerializationConfig().setSerializationInclusion(NON_EMPTY);
+        return objectMapper;
     }
 }

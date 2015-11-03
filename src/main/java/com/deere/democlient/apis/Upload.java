@@ -33,7 +33,6 @@ public class Upload extends AbstractApiBase {
         final RestResponse apiCatalogResponse = apiCatalogRequest.fetchResponse();
 
         Upload upload = new Upload();
-        apiCatalog = upload.linksFrom(upload.read(apiCatalogResponse).as(ApiCatalog.class));
 
         upload.getCurrentUser();
         upload.getUserOrganizations();
@@ -93,12 +92,6 @@ public class Upload extends AbstractApiBase {
 
         //checkThat("POST Response", newFileResponse.getResponseCode(), isEqualTo(CREATED));
         newFileLocation = newFileResponse.getHeaderFields().valueOf("Location");
-    }
-
-    private ObjectMapper initObjectMapper() {
-        final ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.getSerializationConfig().setSerializationInclusion(NON_EMPTY);
-        return objectMapper;
     }
 
     public void uploadFile() {

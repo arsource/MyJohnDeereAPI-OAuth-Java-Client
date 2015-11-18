@@ -10,29 +10,28 @@ import com.deere.rest.RestResponse;
 import com.google.common.collect.ImmutableMap;
 import org.codehaus.jackson.type.TypeReference;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.DigestOutputStream;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
-import static com.deere.rest.HttpStatus.OK;
-import static com.deere.rest.ResponseCodeMatcher.hasResponseCode;
 import static com.google.common.io.ByteStreams.copy;
-import static com.google.common.io.ByteStreams.nullOutputStream;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.security.MessageDigest.getInstance;
 
 public class Download extends AbstractApiBase {
 
-    private static Map<String,Link> apiCatalog;
+    private static Map<String, Link> apiCatalog;
     private CollectionPage<File> files;
     private String firstFileSelfUri;
     private byte[] md5FromSinglePieceDownload;
     private String filename;
+    int actualFileSize = 0;
+    private File firstFileDetails;
 
-    public static void main(String[] arg ) throws Exception{
+    public static void main(String[] arg) throws Exception {
         final RestRequest apiCatalogRequest = oauthRequestTo(baseUri)
                 .method("GET")
                 .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
@@ -47,9 +46,10 @@ public class Download extends AbstractApiBase {
         download.getFiles();
 
         download.retrieveMetadataForFile();
-
-        download.downloadFileContentsAndComputeMd5();
-        download.downloadFileInPiecesAndComputeMd5();
+        if (download.firstFileDetails != null) {
+            //download.downloadFileContentsAndComputeMd5();
+            download.downloadFileInPiecesAndComputeMd5();
+        }
     }
 
 
@@ -61,13 +61,17 @@ public class Download extends AbstractApiBase {
 
         final RestResponse filesResponse = filesRequest.fetchResponse();
 
-        files = read(filesResponse).as(new TypeReference<CollectionPage<File>>() {});
+        files = read(filesResponse).as(new TypeReference<CollectionPage<File>>() {
+        });
 
     }
 
     public void retrieveMetadataForFile() {
-
-        final ImmutableMap<String,Link> linksFromFirstFile = linksFrom(files.get(1));
+        File fileForMetaData = getValidFile();
+        if(fileForMetaData == null) {
+            return;
+        }
+        final ImmutableMap<String, Link> linksFromFirstFile = linksFrom(fileForMetaData);
 
         firstFileSelfUri = linksFromFirstFile.get("self").getUri();
 
@@ -78,50 +82,74 @@ public class Download extends AbstractApiBase {
 
         final RestResponse fileDetailsResponse = fileDetails.fetchResponse();
 
-        final File firstFileDetails = read(fileDetailsResponse).as(File.class);
+        firstFileDetails = read(fileDetailsResponse).as(File.class);
 
         filename = firstFileDetails.getName();
+        actualFileSize = firstFileDetails.getNativeSize().intValue();
+    }
+
+    private File getValidFile() {
+        File fileForMetaData = null;
+        for (File file : files) {
+            if (file.getType() != "INVALID" || file.getType() != "UNKNOWN") {
+                fileForMetaData = file;
+                break;
+            }
+        }
+        if (fileForMetaData == null) {
+            System.out.println(" No Files to download");
+        }
+        return fileForMetaData;
     }
 
     public void downloadFileContentsAndComputeMd5() throws NoSuchAlgorithmException, IOException {
 
         final RestRequest fileDetails = oauthRequestTo(firstFileSelfUri)
                 .method("GET")
-                .addHeader(new HttpHeader("Accept", "application/zip"))
+                .addHeader(new HttpHeader("Accept", "application/octet-stream"))
                 .build();
 
         final RestResponse fileDetailsResponse = fileDetails.fetchResponse();
 
         checkFilenameInContentDispositionHeader(fileDetailsResponse);
 
-        final DigestOutputStream byteDigest = new DigestOutputStream(nullOutputStream(), MessageDigest.getInstance("md5"));
+        java.io.File file = new java.io.File("src/main/resources/" + firstFileDetails.getName());
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        final DigestOutputStream byteDigest = new DigestOutputStream(fileOutputStream, getInstance("md5"));
 
         copy(fileDetailsResponse.getBody(), byteDigest);
 
         md5FromSinglePieceDownload = byteDigest.getMessageDigest().digest();
     }
 
-   public void downloadFileInPiecesAndComputeMd5() throws NoSuchAlgorithmException, IOException {
-        final int fileSize = makeHeadRequestToGetFileSize();
+    public void downloadFileInPiecesAndComputeMd5() throws NoSuchAlgorithmException, IOException {
+//        Max file size for download is 50 MB
+        int maxFileSize = 52428800;
+        int chunkSize = actualFileSize <= maxFileSize ? actualFileSize : maxFileSize - 1;
+        java.io.File file = new java.io.File("src/main/resources/" + firstFileDetails.getName());
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        final DigestOutputStream byteDigest = new DigestOutputStream(fileOutputStream, getInstance("md5"));
 
-        final int numberOfChunks = 2;
-        final int chunkSize = (fileSize / numberOfChunks) - 1;
-        final DigestOutputStream byteDigest = new DigestOutputStream(nullOutputStream(), getInstance("md5"));
+        getChunkFromStartAndRecurse(0, chunkSize, actualFileSize, byteDigest);
 
-        getChunkFromStartAndRecurse(0, chunkSize, fileSize, byteDigest);
-
-        //checkThat("md5 digest", byteDigest.getMessageDigest().digest(), isEqualTo(md5FromSinglePieceDownload));
+        System.out.println("File Name = " + firstFileDetails.getName());
+        System.out.println("File Size(KB) = " + file.length() / 1024.0);
     }
 
     private void checkFilenameInContentDispositionHeader(final RestResponse fileDetailsResponse) {
         final String contentDispositionHeader = "Content-Disposition";
-        //checkThat("Content-Disposition header set?", fileDetailsResponse.getHeaderFields().contains(contentDispositionHeader), isTrue());
 
         if (fileDetailsResponse.getHeaderFields().contains(contentDispositionHeader)) {
             final String contentDisposition = fileDetailsResponse.getHeaderFields().valueOf(contentDispositionHeader);
             final java.util.regex.Matcher matcher = contentDispositionPattern.matcher(contentDisposition);
             if (matcher.matches()) {
-               // checkThat("filename as reported by API", matcher.group(2), isEqualTo(filename));
+                // checkThat("filename as reported by API", matcher.group(2), isEqualTo(filename));
             }
         }
     }
@@ -134,13 +162,13 @@ public class Download extends AbstractApiBase {
         final int end = min(start + chunkSize, maxRange);
         final RestRequest rangeRequest = oauthRequestTo(firstFileSelfUri)
                 .method("GET")
-                .addHeader(new HttpHeader("Accept", "application/zip"))
+                .addHeader(new HttpHeader("Accept", "application/octet-stream"))
                 .addHeader(new HttpHeader("Range", format("bytes=%d-%d", start, end)))
                 .build();
 
         final RestResponse rangeResponse = rangeRequest.fetchResponse();
 
-        checkFilenameInContentDispositionHeader(rangeResponse);
+        //checkFilenameInContentDispositionHeader(rangeResponse);
 
         copy(rangeResponse.getBody(), byteDigest);
 
@@ -149,18 +177,4 @@ public class Download extends AbstractApiBase {
         }
     }
 
-    private int makeHeadRequestToGetFileSize() {
-        final RestRequest headForFile = oauthRequestTo(firstFileSelfUri)
-                .method("HEAD")
-                .addHeader(new HttpHeader("Accept", "application/octet-stream"))
-                .build();
-        final RestResponse headRes = headForFile.fetchResponse();
-        //assertOk(headRes);
-        if (!hasResponseCode(OK).matches(headRes)) {
-            firstFileSelfUri = null;
-            //fail(format("HEAD request to %s returned bad response code", firstFileSelfUri));
-        }
-        //checkThat("Content-Length header", headRes.getHeaderFields().contains("Content-Length"), isTrue());
-        return Integer.valueOf(headRes.getHeaderFields().valueOf("Content-Length"));
-    }
 }

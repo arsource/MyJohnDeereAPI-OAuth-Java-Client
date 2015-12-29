@@ -1,8 +1,10 @@
 
 package com.deere.api.axiom.generated.v3;
 
-import java.util.List;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import java.util.List;
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiCatalog  extends Resource {
     protected List<Link> links;
 

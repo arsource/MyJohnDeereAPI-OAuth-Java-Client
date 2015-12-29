@@ -1,5 +1,8 @@
 package com.deere.api.axiom.generated.v3;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Reading extends Resource{
     private String unit;
     private double valueAsDouble;

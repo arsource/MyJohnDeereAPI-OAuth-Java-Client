@@ -1,8 +1,11 @@
 
 package com.deere.api.axiom.generated.v3;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class Resource
 {
     private final static long serialVersionUID = 1L;

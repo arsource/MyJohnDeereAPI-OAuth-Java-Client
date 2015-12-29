@@ -1,9 +1,11 @@
 package com.deere.api.axiom.generated.v3;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MachineMeasurement
         extends Resource
         implements Serializable

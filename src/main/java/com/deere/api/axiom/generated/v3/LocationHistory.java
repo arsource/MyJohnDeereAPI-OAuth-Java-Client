@@ -1,9 +1,12 @@
 package com.deere.api.axiom.generated.v3;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LocationHistory extends Resource {
 
     private Point point;
-    private long eventTimestamp;
+    private String eventTimestamp;
 
     public Point getPoint() {
         return point;
@@ -13,11 +16,11 @@ public class LocationHistory extends Resource {
         this.point = point;
     }
 
-    public long getEventTimestamp() {
+    public String getEventTimestamp() {
         return eventTimestamp;
     }
 
-    public void setEventTimestamp(long eventTimestamp) {
+    public void setEventTimestamp(String eventTimestamp) {
         this.eventTimestamp = eventTimestamp;
     }
 }

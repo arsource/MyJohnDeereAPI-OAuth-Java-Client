@@ -1,8 +1,5 @@
 package com.deere.api.axiom.generated.v3;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
-
 public class Point {
     private double lat;
     private double lon;

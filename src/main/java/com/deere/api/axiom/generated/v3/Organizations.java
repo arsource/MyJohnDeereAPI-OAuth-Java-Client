@@ -1,8 +1,6 @@
 
 package com.deere.api.axiom.generated.v3;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import java.util.List;
 
 public class Organizations

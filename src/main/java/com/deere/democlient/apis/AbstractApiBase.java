@@ -52,8 +52,6 @@ public abstract class AbstractApiBase {
         final ContentExchanger read = ContentExchanger.read(restResponse);
         final ObjectMapper objectMapper = read.getObjectMapper();
 
-        objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
         objectMapper.setDeserializerProvider(objectMapper
                                                      .getDeserializerProvider()
                                                      .withFactory(new CollectionPageDeserializerFactory(null)));

@@ -1,7 +1,5 @@
 package com.deere.api.axiom.generated.v3;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 /**
  * Created by mn56246 on 8/18/2015.
  */

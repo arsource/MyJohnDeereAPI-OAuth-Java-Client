@@ -1,6 +1,7 @@
 package com.deere.rest;
 
 import com.google.common.net.MediaType;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -24,6 +25,7 @@ public class ContentExchanger {
         this.restResponse = restRequest;
         try {
             unmarshaller = JAXBContext.newInstance("com.deere.api.axiom.generated.v3").createUnmarshaller();
+            objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         } catch (final JAXBException jEx) {
             throw new RuntimeException(jEx);
         }

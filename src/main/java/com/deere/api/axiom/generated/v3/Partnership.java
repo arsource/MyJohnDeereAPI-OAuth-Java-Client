@@ -5,7 +5,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.util.ArrayList;
 import java.util.List;
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class Partnership extends Resource {
     protected List<Link> links = new ArrayList<Link>();
 

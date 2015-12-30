@@ -5,7 +5,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class MachineMeasurement
         extends Resource
         implements Serializable
@@ -80,25 +80,25 @@ public class MachineMeasurement
         {
 
             private final static long serialVersionUID = 1L;
-            protected long intervalStartDate;
-            protected long intervalEndDate;
+            protected String intervalStartDate;
+            protected String intervalEndDate;
             protected double intervalStartEngineHours;
             protected double intervalEndEngineHours;
             protected MachineMeasurement.Series.Interval.Buckets buckets;
 
-            public long getIntervalStartDate() {
+            public String getIntervalStartDate() {
                 return intervalStartDate;
             }
 
-            public void setIntervalStartDate(long value) {
+            public void setIntervalStartDate(String value) {
                 this.intervalStartDate = value;
             }
 
-            public long getIntervalEndDate() {
+            public String getIntervalEndDate() {
                 return intervalEndDate;
             }
 
-            public void setIntervalEndDate(long value) {
+            public void setIntervalEndDate(String value) {
                 this.intervalEndDate = value;
             }
 
@@ -158,8 +158,8 @@ public class MachineMeasurement
 
                     private final static long serialVersionUID = 1L;
                     protected Double value;
-                    protected long actualStartDate;
-                    protected long actualEndDate;
+                    protected String actualStartDate;
+                    protected String actualEndDate;
                     protected double midpointStartEngineHours;
                     protected double midpointEndEngineHours;
                     protected Integer sequenceNumber;
@@ -170,17 +170,17 @@ public class MachineMeasurement
                     public void setValue(Double value) {
                         this.value = value;
                     }
-                    public long getActualStartDate() {
+                    public String getActualStartDate() {
                         return actualStartDate;
                     }
-                    public void setActualStartDate(long value) {
+                    public void setActualStartDate(String value) {
                         this.actualStartDate = value;
                     }
 
-                    public double getActualEndDate() {
+                    public String getActualEndDate() {
                         return actualEndDate;
                     }
-                    public void setActualEndDate(long value) {
+                    public void setActualEndDate(String value) {
                         this.actualEndDate = value;
                     }
 

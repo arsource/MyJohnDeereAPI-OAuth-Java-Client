@@ -3,7 +3,6 @@ package com.deere.api.axiom.generated.v3;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class File extends Resource {
 
     private final static long serialVersionUID = 1L;

@@ -4,7 +4,7 @@ package com.deere.api.axiom.generated.v3;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.util.List;
-@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class Organizations
 {
 

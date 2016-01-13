@@ -126,9 +126,9 @@ public class Download extends AbstractApiBase {
     }
 
     public void downloadFileInPiecesAndComputeMd5() throws NoSuchAlgorithmException, IOException {
-//        Max file size for download is 50 MB
-        int maxFileSize = 52428800;
-        int chunkSize = actualFileSize <= maxFileSize ? actualFileSize : maxFileSize - 1;
+        // Download the file in chunk of 16 MB
+        int maxFileSize = 16 * 1024 * 1024;
+        int chunkSize = Math.min(maxFileSize, actualFileSize);
         java.io.File file = new java.io.File("src/main/resources/" + firstFileDetails.getName());
         if (!file.exists()) {
             file.createNewFile();
@@ -154,27 +154,32 @@ public class Download extends AbstractApiBase {
         }
     }
 
-    private void getChunkFromStartAndRecurse(final int start,
-                                             final int chunkSize,
-                                             final int fileSize,
-                                             final DigestOutputStream byteDigest) throws IOException {
-        final int maxRange = fileSize - 1;
-        final int end = min(start + chunkSize, maxRange);
-        final RestRequest rangeRequest = oauthRequestTo(firstFileSelfUri)
+    private void getChunkFromStartAndRecurse(long start,
+                                             long chunkSize,
+                                             long fileSize,
+                                             DigestOutputStream output) throws IOException {
+        if(fileSize <= chunkSize){
+            fileDownloadRequest(start, fileSize, output);
+        }else{
+            fileDownloadRequest(start, chunkSize, output);
+            getChunkFromStartAndRecurse(start + chunkSize, chunkSize, fileSize - chunkSize, output);
+        }
+    }
+
+    private void fileDownloadRequest(Long start, Long bytesToRead, DigestOutputStream byteDigest) throws IOException {
+        StringBuilder uri = new StringBuilder(firstFileSelfUri)
+                .append("?")
+                .append("offset=").append(start.toString())
+                .append("&")
+                .append("size=").append(bytesToRead.toString());
+
+        final RestRequest rangeRequest = oauthRequestTo(uri.toString())
                 .method("GET")
                 .addHeader(new HttpHeader("Accept", "application/octet-stream"))
-                .addHeader(new HttpHeader("Range", format("bytes=%d-%d", start, end)))
                 .build();
 
         final RestResponse rangeResponse = rangeRequest.fetchResponse();
-
-        //checkFilenameInContentDispositionHeader(rangeResponse);
-
         copy(rangeResponse.getBody(), byteDigest);
-
-        if (start + chunkSize < maxRange) {
-            getChunkFromStartAndRecurse(start + chunkSize + 1, chunkSize, fileSize, byteDigest);
-        }
     }
 
 }

@@ -19,6 +19,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class PermissionsBroker extends AbstractApiBase {
     private static final String REQUESTED_PERMISSION_STATUS = "requested";
     private static final String NOT_GIVEN_PERMISSION_STATUS = "notGiven";
+    private static final String APPROVED_PERMISSION_STATUS = "approved";
 
     public Permissions getPermissions(String uri) {
         final RestRequest permissionsRequest = oauthRequestTo(uri)
@@ -37,6 +38,21 @@ public class PermissionsBroker extends AbstractApiBase {
             if (permissionTypesToRequest.contains(permission.getType()) &&
                     permission.getStatus().equalsIgnoreCase(NOT_GIVEN_PERMISSION_STATUS)) {
                 permission.setStatus(REQUESTED_PERMISSION_STATUS);
+                permissionsUpdates.addPermission(permission);
+            }
+        }
+
+        if (permissionsUpdates.getPermissions().size() > 0) {
+            updatePermissions(uri, permissionsUpdates);
+        }
+    }
+
+    public void assignPermissions(String uri, List<String> permissionTypesToAssign) {
+        Permissions currentPermissions = getPermissions(uri);
+        Permissions permissionsUpdates = new Permissions();
+        for (Permission permission : currentPermissions.getPermissions()) {
+            if (permissionTypesToAssign.contains(permission.getType())) {
+                permission.setStatus(APPROVED_PERMISSION_STATUS);
                 permissionsUpdates.addPermission(permission);
             }
         }

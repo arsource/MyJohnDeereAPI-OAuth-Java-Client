@@ -18,7 +18,7 @@ public class PartnershipCreator {
     public static void main(String[] args) {
         PartnershipCreator partnershipCreator = new PartnershipCreator();
         partnershipCreator.initiatePartnershipAndRequestPermissions(); //use when authenticated as yourself
-//        partnershipCreator.initiatePartnershipAndAssignPermissions(); //use when your desired partner has authenticated
+        partnershipCreator.initiatePartnershipAndAssignPermissions(); //use when your desired partner has authenticated
     }
 
     private void initiatePartnershipAndRequestPermissions() {

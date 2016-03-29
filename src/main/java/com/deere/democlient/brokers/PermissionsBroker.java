@@ -18,7 +18,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
  */
 public class PermissionsBroker extends AbstractApiBase {
     private static final String REQUESTED_PERMISSION_STATUS = "requested";
-    private static final String NOT_GIVEN_PERMISSION_STATUS = "notGiven";
     private static final String APPROVED_PERMISSION_STATUS = "approved";
 
     public Permissions getPermissions(String uri) {
@@ -32,34 +31,21 @@ public class PermissionsBroker extends AbstractApiBase {
     }
 
     public void requestPermissions(String uri, List<String> permissionTypesToRequest) {
-        Permissions currentPermissions = getPermissions(uri);
-        Permissions permissionsUpdates = new Permissions();
-        for (Permission permission : currentPermissions.getPermissions()) {
-            if (permissionTypesToRequest.contains(permission.getType()) &&
-                    permission.getStatus().equalsIgnoreCase(NOT_GIVEN_PERMISSION_STATUS)) {
-                permission.setStatus(REQUESTED_PERMISSION_STATUS);
-                permissionsUpdates.addPermission(permission);
-            }
-        }
-
-        if (permissionsUpdates.getPermissions().size() > 0) {
-            updatePermissions(uri, permissionsUpdates);
-        }
+        updatePermissions(uri, permissionTypesToRequest, REQUESTED_PERMISSION_STATUS);
     }
 
     public void assignPermissions(String uri, List<String> permissionTypesToAssign) {
-        Permissions currentPermissions = getPermissions(uri);
-        Permissions permissionsUpdates = new Permissions();
-        for (Permission permission : currentPermissions.getPermissions()) {
-            if (permissionTypesToAssign.contains(permission.getType())) {
-                permission.setStatus(APPROVED_PERMISSION_STATUS);
-                permissionsUpdates.addPermission(permission);
+        updatePermissions(uri, permissionTypesToAssign, APPROVED_PERMISSION_STATUS);
+    }
+
+    private void updatePermissions(String uri, List<String> permissionTypesToUpdate, String desiredStatus) {
+        Permissions permissions = getPermissions(uri);
+        for (Permission permission : permissions.getPermissions()) {
+            if (permissionTypesToUpdate.contains(permission.getType())) {
+                permission.setStatus(desiredStatus);
             }
         }
-
-        if (permissionsUpdates.getPermissions().size() > 0) {
-            updatePermissions(uri, permissionsUpdates);
-        }
+        updatePermissions(uri, permissions);
     }
 
     private void updatePermissions(String uri, Permissions permissions) {

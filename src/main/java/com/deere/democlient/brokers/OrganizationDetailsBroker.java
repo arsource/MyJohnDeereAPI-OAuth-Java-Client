@@ -10,9 +10,6 @@ import com.google.common.io.ByteStreams;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 
-/**
- * Created by mn56246 on 11/3/2015.
- */
 public class OrganizationDetailsBroker extends AbstractApiBase {
 
     public Organization getOrgDetails(String orgDetailsUri) {

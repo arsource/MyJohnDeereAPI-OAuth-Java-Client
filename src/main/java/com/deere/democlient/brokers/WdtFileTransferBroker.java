@@ -10,9 +10,6 @@ import com.google.common.io.ByteStreams;
 
 import java.util.Arrays;
 
-/**
- * Created by mn56246 on 11/3/2015.
- */
 public class WdtFileTransferBroker extends AbstractApiBase {
 
     public FileTransfer getFileTransfer(String uri) {

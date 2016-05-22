@@ -13,9 +13,6 @@ import java.util.List;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 
-/**
- * Created by mn56246 on 11/3/2015.
- */
 public class PermissionsBroker extends AbstractApiBase {
     private static final String REQUESTED_PERMISSION_STATUS = "requested";
     private static final String APPROVED_PERMISSION_STATUS = "approved";

@@ -13,9 +13,6 @@ import java.util.List;
 
 import static com.google.common.io.ByteStreams.copy;
 
-/**
- * Created by mn56246 on 11/3/2015.
- */
 public class FileDownloadBroker extends AbstractApiBase {
     public void downloadFile(String fileUri, String outputDirectory) {
         File file = retrieveMetadataForFile(fileUri);

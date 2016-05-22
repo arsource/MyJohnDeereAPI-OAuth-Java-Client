@@ -13,9 +13,6 @@ import java.util.Arrays;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 
-/**
- * Created by mn56246 on 11/3/2015.
- */
 public class PartnershipBroker extends AbstractApiBase {
     private static final String FROM_PARTNERSHIP = "fromPartnership";
     private static final String TO_PARTNERSHIP = "toPartnership";

@@ -8,9 +8,6 @@ import com.deere.rest.RestResponse;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 
-/**
- * Created by mn56246 on 11/3/2015.
- */
 public class ResourceDeletionBroker extends AbstractApiBase {
     public void deleteResource(String uri) {
         final RestRequest deletionRequest = oauthRequestTo(uri)

@@ -12,9 +12,6 @@ import com.google.common.io.Files;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 
-/**
- * Created by mn56246 on 11/3/2015.
- */
 public class FileUploadBroker extends AbstractApiBase {
 
     public static File constructFileMetaDataObject(String name) {

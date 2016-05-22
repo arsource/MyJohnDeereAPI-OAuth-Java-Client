@@ -6,9 +6,6 @@ import com.deere.rest.HttpHeader;
 import com.deere.rest.RestRequest;
 import com.deere.rest.RestResponse;
 
-/**
- * Created by mn56246 on 11/3/2015.
- */
 public class CurrentUserBroker extends AbstractApiBase {
 
     public User getCurrentUserDetails() {

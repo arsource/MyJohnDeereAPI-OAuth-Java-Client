@@ -1,7 +1,7 @@
 package com.deere.democlient.apis;
 
 import com.deere.api.axiom.generated.v3.*;
-import com.deere.democlient.brokers.FieldListBroker;
+import com.deere.democlient.brokers.GenericListBroker;
 import com.deere.democlient.brokers.OrganizationDetailsBroker;
 import com.deere.democlient.util.*;
 
@@ -12,14 +12,14 @@ public class ClientFarmFieldExtract extends AbstractApiBase {
 
     public static void main(String[] args) {
         //Replace the following URI with that of your desired organization
-        final String orgUri = "https://apicert.deere.com/platform/organizations/{target organization ID}";
+        final String orgUri = "https://apicert.soa-proxy.deere.com/platform/organizations/{target organization ID}";
         org.junit.Assert.assertFalse(orgUri.contains("{target organization ID}"));
 
         Organization org = new OrganizationDetailsBroker().getOrgDetails(orgUri);
         System.out.println("Org Name: " + org.getName() + "\n");
 
         String fieldsUri = getFieldsUriWithClientAndFarmEmbeds(org);
-        List<Field> fields = new FieldListBroker().getFieldList(fieldsUri);
+        List<Field> fields = new GenericListBroker().getList(fieldsUri, Field.class);
         ClientFarmFieldTree clientFarmFieldTree = new ClientFarmFieldTree();
         clientFarmFieldTree.addFieldsWithEmbeddedClientAndFarm(fields);
         printClientFarmFieldStructure(clientFarmFieldTree);

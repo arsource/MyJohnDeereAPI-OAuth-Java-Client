@@ -3,14 +3,11 @@ package com.deere.democlient.apis;
 import com.deere.api.axiom.generated.v3.*;
 import com.deere.democlient.brokers.FieldListBroker;
 import com.deere.democlient.brokers.OrganizationDetailsBroker;
-import com.deere.democlient.domain.*;
+import com.deere.democlient.util.*;
 
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by mn56246 on 1/26/2016.
- */
 public class ClientFarmFieldExtract extends AbstractApiBase {
 
     public static void main(String[] args) {

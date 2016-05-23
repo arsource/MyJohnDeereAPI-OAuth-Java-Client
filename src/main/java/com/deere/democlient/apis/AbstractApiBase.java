@@ -172,17 +172,20 @@ public abstract class AbstractApiBase {
 
     protected byte[] getBytesForObject(Object object) {
         try {
-            final ObjectMapper objectMapper = initObjectMapper();
+            final ObjectMapper objectMapper = getObjectMapper();
             return objectMapper.writeValueAsBytes(object);
         } catch (IOException e) {
             throw new RuntimeException("Failed to marshall the request input");
         }
     }
 
-    @Deprecated
-    protected ObjectMapper initObjectMapper() {
-        final ObjectMapper objectMapper = new ObjectMapper();
+    protected ObjectMapper getObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.getSerializationConfig().setSerializationInclusion(NON_EMPTY);
+        objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.setDeserializerProvider(objectMapper
+                .getDeserializerProvider()
+                .withFactory(new CollectionPageDeserializerFactory(null)));
         return objectMapper;
     }
 }

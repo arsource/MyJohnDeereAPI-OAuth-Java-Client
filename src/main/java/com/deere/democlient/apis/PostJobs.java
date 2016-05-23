@@ -47,7 +47,7 @@ public class PostJobs extends AbstractApiBase {
         List linkList = newArrayList(link, link1);
         job.setLinks(linkList);
 
-        final ObjectMapper objectMapper = initObjectMapper();
+        final ObjectMapper objectMapper = getObjectMapper();
 
         final RestRequest newJobsRequest = oauthRequestTo(baseJobsUri)
                 .method("POST")
@@ -89,7 +89,7 @@ public class PostJobs extends AbstractApiBase {
 
         job.getOperations().add(tillageOperation);
 
-        final ObjectMapper objectMapper = initObjectMapper();
+        final ObjectMapper objectMapper = getObjectMapper();
 
         final RestRequest newJobsRequest = oauthRequestTo(baseJobsUri)
                 .method("POST")
@@ -145,7 +145,7 @@ public class PostJobs extends AbstractApiBase {
 
         job.getOperations().add(seedingOperation);
 
-        final ObjectMapper objectMapper = initObjectMapper();
+        final ObjectMapper objectMapper = getObjectMapper();
 
         final RestRequest newJobsRequest = oauthRequestTo(baseJobsUri)
                 .method("POST")
@@ -197,7 +197,7 @@ public class PostJobs extends AbstractApiBase {
 
         job.getOperations().add(applicationOperation);
 
-        final ObjectMapper objectMapper = initObjectMapper();
+        final ObjectMapper objectMapper = getObjectMapper();
 
         final RestRequest newJobsRequest = oauthRequestTo(baseJobsUri)
                 .method("POST")

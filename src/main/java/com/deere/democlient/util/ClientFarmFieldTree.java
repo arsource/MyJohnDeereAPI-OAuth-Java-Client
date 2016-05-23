@@ -1,4 +1,4 @@
-package com.deere.democlient.domain;
+package com.deere.democlient.util;
 
 import com.deere.api.axiom.generated.v3.Client;
 import com.deere.api.axiom.generated.v3.Farm;

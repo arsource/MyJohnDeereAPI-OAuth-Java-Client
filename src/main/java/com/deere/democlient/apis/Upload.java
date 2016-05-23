@@ -17,8 +17,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_EMPTY;
-
 public class Upload extends AbstractApiBase {
     private String userOrganizations;
     private Link fileUploadLink;
@@ -80,7 +78,7 @@ public class Upload extends AbstractApiBase {
         final File apiFile = new File();
         apiFile.setName("greatFileFromDeere.zip");
 
-        final ObjectMapper objectMapper = initObjectMapper();
+        final ObjectMapper objectMapper = getObjectMapper();
         final RestRequest newFileRequest = oauthRequestTo(fileUploadLink.getUri())
                 .method("POST")
                 .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))

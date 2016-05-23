@@ -11,10 +11,7 @@ import org.codehaus.jackson.type.TypeReference;
 
 import java.io.IOException;
 
-import static org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion.NON_EMPTY;
-
 public class Partnerships extends AbstractApiBase {
-
 
     private String userOrganizations;
     private String fromPartnershipLink;
@@ -85,7 +82,7 @@ public class Partnerships extends AbstractApiBase {
 
         partnership.getLinks().add(fromPartnerShipLink);
 
-        final ObjectMapper objectMapper = initObjectMapper();
+        final ObjectMapper objectMapper = getObjectMapper();
 
         final RestRequest newPartnerRequest = oauthRequestTo(basePartnershipUri)
                 .method("POST")
@@ -128,7 +125,7 @@ public class Partnerships extends AbstractApiBase {
 
         String permissionsPath = "/permissions";
 
-        final ObjectMapper objectMapper = initObjectMapper();
+        final ObjectMapper objectMapper = getObjectMapper();
 
        /* StringBuilder partnerRequestBody = new StringBuilder().append("{" +
                 "  \"permissions\":[" +

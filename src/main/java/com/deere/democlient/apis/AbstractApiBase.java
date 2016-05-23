@@ -38,6 +38,7 @@ public abstract class AbstractApiBase {
     protected final Pattern contentDispositionPattern = Pattern.compile("\\s*attachment;\\s*filename=(\"?)([^\"]+)\\1");
     protected final String filename = randomUUID().toString() + ".zip";
     protected Map<String, Link> apiCatalog = initializeApiCatalog();
+    private ObjectMapper objectMapper;
 
     private Map<String,Link> initializeApiCatalog() {
         final RestRequest apiCatalogRequest = oauthRequestTo(baseUri)
@@ -180,12 +181,14 @@ public abstract class AbstractApiBase {
     }
 
     protected ObjectMapper getObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.getSerializationConfig().setSerializationInclusion(NON_EMPTY);
-        objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.setDeserializerProvider(objectMapper
-                .getDeserializerProvider()
-                .withFactory(new CollectionPageDeserializerFactory(null)));
+        if (objectMapper == null) {
+            objectMapper = new ObjectMapper();
+            objectMapper.getSerializationConfig().setSerializationInclusion(NON_EMPTY);
+            objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            objectMapper.setDeserializerProvider(objectMapper
+                    .getDeserializerProvider()
+                    .withFactory(new CollectionPageDeserializerFactory(null)));
+        }
         return objectMapper;
     }
 }

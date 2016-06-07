@@ -31,7 +31,7 @@ public class OAuthWorkFlow {
     public void retrieveApiCatalogToEstablishOAuthProviderDetails() {
         final RestRequest apiCatalogRequest = request()
                 .method("GET")
-                .baseUri("https://apicert.soa-proxy.deere.com/platform/")
+                .baseUri("https://sandboxapi.deere.com/platform/")
                 .addHeader(new HttpHeader("Accept", "application/vnd.deere.axiom.v3+json"))
                 .oauthClient(CLIENT)
                 .build();

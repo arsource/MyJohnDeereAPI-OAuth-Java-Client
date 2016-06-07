@@ -12,7 +12,7 @@ public class ClientFarmFieldExtract extends AbstractApiBase {
 
     public static void main(String[] args) {
         //Replace the following URI with that of your desired organization
-        final String orgUri = "https://apicert.soa-proxy.deere.com/platform/organizations/{target organization ID}";
+        final String orgUri = "https://sandboxapi.deere.com/platform/organizations/{target organization ID}";
         org.junit.Assert.assertFalse(orgUri.contains("{target organization ID}"));
 
         Organization org = new OrganizationDetailsBroker().getOrgDetails(orgUri);

@@ -29,9 +29,9 @@ public abstract class AbstractApiBase {
 
     private static final ClassLoader CLASS_LOADER = AbstractApiBase.class.getClassLoader();
 
-    public final static String baseUri = "https://apicert.soa-proxy.deere.com/platform/";
-    protected final static String basePartnershipUri = "https://apicert.soa-proxy.deere.com/platform/partnerships";
-    protected final static String baseJobsUri = "https://apicert.soa-proxy.deere.com/platform/jobs";
+    public final static String baseUri = "https://sandboxapi.deere.com/platform/";
+    protected final static String basePartnershipUri = "https://sandboxapi.deere.com/platform/partnerships";
+    protected final static String baseJobsUri = "https://sandboxapi.deere.com/platform/jobs";
     protected final static String V3_CONTENT_TYPE = "application/vnd.deere.axiom.v3+json";
     protected final static String V3_ACCEPTABLE_TYPE = "application/vnd.deere.axiom.v3+json";
 

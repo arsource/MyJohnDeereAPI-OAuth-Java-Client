@@ -82,13 +82,21 @@ public class RestRequest {
     }
 
     public RestResponse fetchResponse() {
-        final HttpURLConnection req;
+        final HttpURLConnection req = prepareConnection();
+        return fetchResponse(req);
+    }
+
+    public RestResponse fetchResponseAnonymously() {
+        final HttpURLConnection req = prepareAnonymousConnection();
+        return fetchResponse(req);
+    }
+
+    public RestResponse fetchResponse(HttpURLConnection req) {
         final HttpHeadersMap responseHeaders;
         final int responseCode;
         final String responseMessage;
 
         try {
-            req = prepareConnection();
             req.connect();
 
             if (req.getDoOutput()) {
@@ -135,9 +143,16 @@ public class RestRequest {
         return 301 == responseCode;
     }
 
-    private HttpURLConnection prepareConnection()  {
+    private HttpURLConnection prepareConnection() {
         final OAuthConsumer consumer = createOAuthConsumer();
+        return prepareConnection(consumer);
+    }
 
+    private HttpURLConnection prepareAnonymousConnection() {
+        return prepareConnection(null);
+    }
+
+    private HttpURLConnection prepareConnection(OAuthConsumer consumer) {
         final URL url = buildUrlFromUri();
         final boolean useProxy = isProxySetInSystemProperties();
         final HttpURLConnection req = openConnection(url, useProxy ? proxyFromSystemProperties() : null);
@@ -150,7 +165,9 @@ public class RestRequest {
             req.addRequestProperty(header.getName(), header.getValue());
         }
 
-        signRequestWithConsumer(req, consumer);
+        if (consumer != null) {
+            signRequestWithConsumer(req, consumer);
+        }
         disableRedirectsSoTheyCanBeResignedWithOAuth(req);
 
         if (useProxy) {

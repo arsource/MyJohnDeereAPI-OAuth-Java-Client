@@ -29,7 +29,7 @@ public class ShapefileDownloadBroker extends AbstractApiBase {
     }
 
     public String getDownloadUrl(FieldOperation fieldOperation) throws UnsupportedShapefileExportException, UnavailableRelException {
-        String uri = LinkUtility.getUriForRel(fieldOperation, "asyncShapefileDownload");
+        String uri = LinkUtility.getUriForRel(fieldOperation, "shapeFileAsync");
         return getDownloadUrl(uri);
     }
 

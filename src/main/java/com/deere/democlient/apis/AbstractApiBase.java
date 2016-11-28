@@ -40,7 +40,7 @@ public abstract class AbstractApiBase {
     protected Map<String, Link> apiCatalog = initializeApiCatalog();
     private ObjectMapper objectMapper;
 
-    private Map<String,Link> initializeApiCatalog() {
+    private Map<String, Link> initializeApiCatalog() {
         final RestRequest apiCatalogRequest = oauthRequestTo(baseUri)
                 .method("GET")
                 .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
@@ -55,12 +55,12 @@ public abstract class AbstractApiBase {
         final ObjectMapper objectMapper = read.getObjectMapper();
 
         objectMapper.setDeserializerProvider(objectMapper
-                                                     .getDeserializerProvider()
-                                                     .withFactory(new CollectionPageDeserializerFactory(null)));
+                .getDeserializerProvider()
+                .withFactory(new CollectionPageDeserializerFactory(null)));
         return read;
     }
 
-    public static <T> void  assertThat(String reason, T actual, Matcher<T> matcher) {
+    public static <T> void assertThat(String reason, T actual, Matcher<T> matcher) {
         if (!matcher.matches(actual)) {
             throw new java.lang.AssertionError("No Match");
 
@@ -81,6 +81,12 @@ public abstract class AbstractApiBase {
                 .baseUri(baseUri)
                 .oauthClient(ApiCredentials.CLIENT)
                 .oauthToken(ApiCredentials.TOKEN);
+    }
+
+    public static RestRequestBuilder oauthRequest2LeggedTo(final String baseUri) {
+        return request()
+                .baseUri(baseUri)
+                .oauthClient(ApiCredentials.CLIENT);
     }
 
     public static Link linkWith(final String rel, final String uri) {
@@ -164,11 +170,12 @@ public abstract class AbstractApiBase {
 
     public ImmutableMap<String, Link> linksFrom(final Resource resource) {
         return Maps.uniqueIndex(resource.getLinks(),
-                                new Function<Link, String>() {
-                                    @Override public String apply(final Link input) {
-                                        return input.getRel();
-                                    }
-                                });
+                new Function<Link, String>() {
+                    @Override
+                    public String apply(final Link input) {
+                        return input.getRel();
+                    }
+                });
     }
 
     protected byte[] getBytesForObject(Object object) {

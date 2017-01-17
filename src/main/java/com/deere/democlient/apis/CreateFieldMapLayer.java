@@ -1,8 +1,6 @@
 package com.deere.democlient.apis;
 
-import com.deere.api.axiom.generated.v3.ContributedMapLayerSummary;
-import com.deere.api.axiom.generated.v3.Link;
-import com.deere.api.axiom.generated.v3.Metadata;
+import com.deere.api.axiom.generated.v3.*;
 import com.deere.democlient.util.JodaConverter;
 import com.deere.rest.HttpHeader;
 import com.deere.rest.RestRequest;
@@ -22,15 +20,52 @@ public class CreateFieldMapLayer extends AbstractApiBase {
     *
     */
 
-        public static final String DEFINITION_ID = "Enter contribution definition ID here";
+    public static final String DEFINITION_ID = "Enter contribution definition ID here";
     public static final int ORG_ID = 0; // Assign Organization ID here
     public static final String FIELD_ID = "Enter field ID here";
+
 
     public static void main(String[] arg) throws IOException {
         CreateFieldMapLayer fieldMapLayer = new CreateFieldMapLayer();
 
         ContributedMapLayerSummary contributedMapLayerSummary = createContributedMapLayerSummaryWith(DEFINITION_ID, ORG_ID);
-        fieldMapLayer.createMapLayerSummary(contributedMapLayerSummary);
+        String mapLayerSummaryLocation = fieldMapLayer.createMapLayerSummary(contributedMapLayerSummary);
+
+        ContributedMapLayer mapLayer = CreateMapLayerWith(ORG_ID);
+        fieldMapLayer.createMapLayer(mapLayerSummaryLocation, mapLayer);
+    }
+
+    private static ContributedMapLayer CreateMapLayerWith(int orgId) {
+        ContributedMapLayer mapLayer = new ContributedMapLayer();
+        ArrayList<Link> links = newArrayList(linkWith("owningOrganization", baseUri + "organizations/" + orgId));
+        mapLayer.setLinks(links);
+        mapLayer.setExtent(new MapExtent(0.0, 0.0, 0.0, 0.0)); // Enter extent here
+        MapLegend legends = new MapLegend();
+        legends.setUnitId("Pounds");
+        // Enter your ranges here, following is just an example
+        legends.setRanges(newArrayList(new MapLegendItem("250","#DC143C", 0.33, 0.0, 100.0),
+                new MapLegendItem("300","#0000CD", 0.33, 20.0, 80.0),
+                new MapLegendItem("350","#FF7F00", 0.33, 0.0, 100.0)));
+        mapLayer.setLegends(legends);
+        mapLayer.setTitle("Set your title here");
+        return mapLayer;
+    }
+
+    private String createMapLayer(String mapLayerSummaryLocation, ContributedMapLayer contributedMapLayer) {
+        final RestRequest restRequest = oauthRequestTo(mapLayerSummaryLocation + "/mapLayers")
+                .method("POST")
+                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
+                .addHeader(new HttpHeader("Content-Type", V3_CONTENT_TYPE))
+                .body(ByteStreams.newInputStreamSupplier(getBytesForObject(contributedMapLayer)))
+                .build();
+
+        final RestResponse restResponse = restRequest.fetchResponse();
+        System.out.println("Response code: " + restResponse.getResponseCode());
+
+        String location = restResponse.getHeaderFields().valueOf("Location");
+
+        System.out.println("New map layer Link : " + location);
+        return location;
     }
 
     private String createMapLayerSummary(ContributedMapLayerSummary summary) {

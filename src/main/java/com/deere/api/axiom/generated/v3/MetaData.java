@@ -4,6 +4,14 @@ public class Metadata extends Resource {
     protected String name;
     protected String value;
 
+    public Metadata() {
+    }
+
+    public Metadata(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
     public String getName() {
         return name;
     }

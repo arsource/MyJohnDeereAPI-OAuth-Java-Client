@@ -7,7 +7,7 @@ import java.util.List;
 public class FileResource extends Resource{
     protected DateTime timestamp;
     protected String mimeType;
-    protected List<Metadata> metadata;
+    protected List<ContributedMetadata> contributedMetadata;
 
     public DateTime getTimestamp() {
         return timestamp;
@@ -25,11 +25,11 @@ public class FileResource extends Resource{
         this.mimeType = mimeType;
     }
 
-    public List<Metadata> getMetadata() {
-        return metadata;
+    public List<ContributedMetadata> getContributedMetadata() {
+        return contributedMetadata;
     }
 
-    public void setMetadata(List<Metadata> metadata) {
-        this.metadata = metadata;
+    public void setContributedMetadata(List<ContributedMetadata> contributedMetadata) {
+        this.contributedMetadata = contributedMetadata;
     }
 }

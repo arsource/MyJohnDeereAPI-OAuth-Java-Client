@@ -133,12 +133,12 @@ public class CreateFieldMapLayer extends AbstractApiBase {
 
         summary.setTitle("Enter Title here");
         summary.setText("Enter description text here");
-        ArrayList<Metadata> metadata = newArrayList();
-        Metadata data = new Metadata();
+        ArrayList<ContributedMetadata> contributedMetadata = newArrayList();
+        ContributedMetadata data = new ContributedMetadata();
         data.setName("test name");
         data.setValue("test value");
-        metadata.add(data);
-        summary.setMetadata(metadata);
+        contributedMetadata.add(data);
+        summary.setContributedMetadata(contributedMetadata);
         summary.setDateCreated(JodaConverter.marshal(new DateTime()));
         return summary;
     }
@@ -147,7 +147,7 @@ public class CreateFieldMapLayer extends AbstractApiBase {
         FileResource fileResource = new FileResource();
         fileResource.setLinks(newArrayList(linkWith("owningOrganization", baseUri + "organizations/" + orgId)));
         fileResource.setMimeType(MIME_TYPE);
-        fileResource.setMetadata(newArrayList(new Metadata("filename", FILE_NAME)));
+        fileResource.setContributedMetadata(newArrayList(new ContributedMetadata("filename", FILE_NAME)));
         return fileResource;
     }
 

@@ -1,13 +1,13 @@
 package com.deere.api.axiom.generated.v3;
 
-public class Metadata extends Resource {
+public class ContributedMetadata extends Resource {
     protected String name;
     protected String value;
 
-    public Metadata() {
+    public ContributedMetadata() {
     }
 
-    public Metadata(String name, String value) {
+    public ContributedMetadata(String name, String value) {
         this.name = name;
         this.value = value;
     }

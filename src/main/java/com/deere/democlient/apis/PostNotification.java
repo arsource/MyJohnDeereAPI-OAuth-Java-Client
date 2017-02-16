@@ -32,8 +32,7 @@ public class PostNotification extends AbstractApiBase {
     }
 
     private void getNotificationStatusFor(String location) {
-        String eventLocation = location.replaceFirst("/", "");
-        final RestRequest restRequest = oauthRequestTo(baseUri + eventLocation)
+        final RestRequest restRequest = oauthRequestTo(location)
                 .method("GET")
                 .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
                 .addHeader(new HttpHeader("Content-Type", V3_CONTENT_TYPE))

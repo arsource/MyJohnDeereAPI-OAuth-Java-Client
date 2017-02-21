@@ -1,6 +1,7 @@
 package com.deere.democlient.apis;
 
 import com.deere.api.axiom.generated.v3.*;
+import com.deere.democlient.brokers.ResourceDeletionBroker;
 import com.deere.democlient.util.JodaConverter;
 import com.deere.rest.HttpHeader;
 import com.deere.rest.RestRequest;
@@ -28,65 +29,41 @@ public class CreateFieldMapLayer extends AbstractApiBase {
     public static final String FILE_NAME = "Field7FiveManagementZones.png"; // Enter file name here
     public static final String MIME_TYPE = "image/png"; // Enter mime type here
 
-
     public static void main(String[] arg) throws IOException {
 
         CreateFieldMapLayer fieldMapLayer = new CreateFieldMapLayer();
+        CreateFileResource fileResourceHelper = new CreateFileResource();
 
-        ContributedMapLayerSummary contributedMapLayerSummary = createContributedMapLayerSummaryWith(DEFINITION_ID, ORG_ID, FIELD_ID);
+        ContributedMapLayerSummary contributedMapLayerSummary = createContributedMapLayerSummaryWith(DEFINITION_ID, ORG_ID);
         String mapLayerSummaryLocation = fieldMapLayer.createMapLayerSummary(contributedMapLayerSummary);
 
         ContributedMapLayer mapLayer = CreateMapLayerWith(ORG_ID);
         String mapLayerLocation = fieldMapLayer.createMapLayer(mapLayerSummaryLocation, mapLayer);
 
-        FileResource fileResource = createFileResourceWith(ORG_ID);
-        String fileResourceLocation = fieldMapLayer.createFileResource(mapLayerLocation, fileResource);
+        FileResource fileResource = createFileResourceWith(ORG_ID, FILE_NAME, MIME_TYPE);
+        String fileResourceLocation = fileResourceHelper.createFileResource(mapLayerLocation, fileResource);
 
-        fieldMapLayer.uploadFileResource(fileResourceLocation, FILE_RESOURCE_PATH);
+        fileResourceHelper.uploadFileResource(fileResourceLocation, FILE_RESOURCE_PATH);
 
-//        fieldMapLayer.deleteMapLayerSummary(mapLayerSummaryLocation);
-
-    }
-
-    private void uploadFileResource(String fileResourceLocation, String fileResourcePath) {
-        final RestRequest restRequest = oauthRequestTo(fileResourceLocation)
-                .method("PUT")
-                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
-                .addHeader(new HttpHeader("Content-Type", "application/octet-stream"))
-                .body(com.google.common.io.Files.newInputStreamSupplier(new java.io.File(fileResourcePath)))
-                .build();
-
-        final RestResponse restResponse = restRequest.fetchResponse();
-        System.out.println("Response code: " + restResponse.getResponseCode());
-    }
-
-    private String createFileResource(String mapLayerLocation, FileResource fileResource) {
-        final RestRequest restRequest = oauthRequestTo(mapLayerLocation + "/fileResources")
-                .method("POST")
-                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
-                .addHeader(new HttpHeader("Content-Type", V3_CONTENT_TYPE))
-                .body(ByteStreams.newInputStreamSupplier(getBytesForObject(fileResource)))
-                .build();
-
-        final RestResponse restResponse = restRequest.fetchResponse();
-        System.out.println("Response code: " + restResponse.getResponseCode());
-
-        String location = restResponse.getHeaderFields().valueOf("Location");
-        System.out.println("New file resource Link : " + location);
-        return location;
+        // Delete Map layer and summary
+//        ResourceDeletionBroker deleteResource = new ResourceDeletionBroker();
+//        deleteResource.deleteResource(mapLayerSummaryLocation);
     }
 
     private static ContributedMapLayer CreateMapLayerWith(int orgId) {
         ContributedMapLayer mapLayer = new ContributedMapLayer();
         ArrayList<Link> links = newArrayList(linkWith("owningOrganization", baseUri + "organizations/" + orgId));
         mapLayer.setLinks(links);
-        mapLayer.setExtent(new MapExtent(0.0, 0.0, 0.0, 0.0)); // Enter extent here
+        mapLayer.setExtent(new MapExtent(41.6662524, 41.6686728, -93.1500448, -93.145828)); // Enter extent here
         MapLegend legends = new MapLegend();
         legends.setUnitId("Pounds");
         // Enter your ranges here, following is just an example
-        legends.setRanges(newArrayList(new MapLegendItem("250","#DC143C", 0.33, 0.0, 100.0),
-                new MapLegendItem("300","#0000CD", 0.33, 20.0, 80.0),
-                new MapLegendItem("350","#FF7F00", 0.33, 0.0, 100.0)));
+        legends.setRanges(newArrayList(
+                new MapLegendItem("250","#F55E28", 0.20, 0.0, 100.0),
+                new MapLegendItem("275","#FDA12E", 0.20, 0.0, 100.0),
+                new MapLegendItem("300","#D5BD30", 0.20, 0.0, 100.0),
+                new MapLegendItem("325","#83CB2E", 0.20, 0.0, 100.0),
+                new MapLegendItem("350","#3CD72E", 0.20, 0.0, 100.0)));
         mapLayer.setLegends(legends);
         mapLayer.setTitle("Set Map Layer title here");
         return mapLayer;
@@ -124,11 +101,10 @@ public class CreateFieldMapLayer extends AbstractApiBase {
         return location;
     }
 
-    private static ContributedMapLayerSummary createContributedMapLayerSummaryWith(String definitionId, int orgId, String fieldId) {
+    private static ContributedMapLayerSummary createContributedMapLayerSummaryWith(String definitionId, int orgId) {
         ContributedMapLayerSummary summary = new ContributedMapLayerSummary();
         ArrayList<Link> links = newArrayList(linkWith("contributionDefinition", baseUri + "contributionDefinitions/" + definitionId),
-                linkWith("owningOrganization", baseUri + "organizations/" + orgId),
-                linkWith("targetResource", baseUri + "organizations/" + orgId + "/fields/" + fieldId));
+                linkWith("owningOrganization", baseUri + "organizations/" + orgId));
         summary.setLinks(links);
 
         summary.setTitle("Enter Title here");
@@ -138,28 +114,16 @@ public class CreateFieldMapLayer extends AbstractApiBase {
         data.setName("test name");
         data.setValue("test value");
         contributedMetadata.add(data);
-        summary.setContributedMetadata(contributedMetadata);
+        summary.setMetadata(contributedMetadata);
         summary.setDateCreated(JodaConverter.marshal(new DateTime()));
         return summary;
     }
 
-    private static FileResource createFileResourceWith(int orgId) {
+    private static FileResource createFileResourceWith(int orgId, String fileName, String mimeType) {
         FileResource fileResource = new FileResource();
         fileResource.setLinks(newArrayList(linkWith("owningOrganization", baseUri + "organizations/" + orgId)));
-        fileResource.setMimeType(MIME_TYPE);
-        fileResource.setContributedMetadata(newArrayList(new ContributedMetadata("filename", FILE_NAME)));
+        fileResource.setMimeType(mimeType);
+        fileResource.setMetadata(newArrayList(new ContributedMetadata("filename", fileName)));
         return fileResource;
-    }
-
-
-    private void deleteMapLayerSummary(String mapLayerSummaryLocation) {
-        System.out.println("Deleting: "+ mapLayerSummaryLocation);
-        final RestRequest restRequest = oauthRequestTo(mapLayerSummaryLocation)
-                .method("DELETE")
-                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
-                .build();
-
-        final RestResponse restResponse = restRequest.fetchResponse();
-        System.out.println("Response code: " + restResponse.getResponseCode());
     }
 }

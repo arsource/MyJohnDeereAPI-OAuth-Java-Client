@@ -5,7 +5,7 @@ import java.util.List;
 public class ContributedMapLayerSummary extends Resource {
     protected String title;
     protected String text;
-    protected List<ContributedMetadata> contributedMetadata;
+    protected List<ContributedMetadata> metadata;
     protected String dateCreated;
 
 
@@ -25,12 +25,12 @@ public class ContributedMapLayerSummary extends Resource {
         this.text = text;
     }
 
-    public List<ContributedMetadata> getContributedMetadata() {
-        return contributedMetadata;
+    public List<ContributedMetadata> getMetadata() {
+        return metadata;
     }
 
-    public void setContributedMetadata(List<ContributedMetadata> contributedMetadata) {
-        this.contributedMetadata = contributedMetadata;
+    public void setMetadata(List<ContributedMetadata> metadata) {
+        this.metadata = metadata;
     }
 
     public String getDateCreated() {

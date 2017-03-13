@@ -25,25 +25,38 @@ public class CreateFieldMapLayer extends AbstractApiBase {
     public static final int ORG_ID = 0; // Assign Organization ID here
     public static final String FIELD_ID = "Enter field ID here";
 
-    public static final String FILE_RESOURCE_PATH = "src/main/resources/Field7FiveManagementZones.png"; // Enter your file resource path
-    public static final String FILE_NAME = "Field7FiveManagementZones.png"; // Enter file name here
-    public static final String MIME_TYPE = "image/png"; // Enter mime type here
+    public static final String FILE_NAME_SHAPEFILE = "shapefile_with_colors.zip"; // Enter shapefile name here
+    public static final String MIME_TYPE_SHAPEFILE = "application/zip";
+
+    public static final String FILE_NAME_PNG = "Field7FiveManagementZones.png"; // Enter PNG file name here
+    public static final String MIME_TYPE_PNG = "image/png";
+
+    public static final String SHAPEFILE_RESOURCE_PATH = "src/main/resources/" + FILE_NAME_SHAPEFILE; // Enter your file resource path
+    public static final String PNG_RESOURCE_PATH = "src/main/resources/" + FILE_NAME_PNG; // Enter your file resource path
+
 
     public static void main(String[] arg) throws IOException {
+        //Shapefile as MapLayer
+        CreateMapLayerWith(DEFINITION_ID, ORG_ID, FILE_NAME_SHAPEFILE, MIME_TYPE_SHAPEFILE, SHAPEFILE_RESOURCE_PATH);
 
+        //PNG as MapLayer
+        CreateMapLayerWith(DEFINITION_ID, ORG_ID, FILE_NAME_PNG, MIME_TYPE_PNG, PNG_RESOURCE_PATH);
+    }
+
+    private static void CreateMapLayerWith(String definitionId, int orgId, String fileName, String mimeType, String fileResourcePath) {
         CreateFieldMapLayer fieldMapLayer = new CreateFieldMapLayer();
         CreateFileResource fileResourceHelper = new CreateFileResource();
 
-        ContributedMapLayerSummary contributedMapLayerSummary = createContributedMapLayerSummaryWith(DEFINITION_ID, ORG_ID);
+        ContributedMapLayerSummary contributedMapLayerSummary = createContributedMapLayerSummaryWith(definitionId, orgId);
         String mapLayerSummaryLocation = fieldMapLayer.createMapLayerSummary(contributedMapLayerSummary);
 
-        ContributedMapLayer mapLayer = CreateMapLayerWith(ORG_ID);
+        ContributedMapLayer mapLayer = CreateMapLayerWith(orgId);
         String mapLayerLocation = fieldMapLayer.createMapLayer(mapLayerSummaryLocation, mapLayer);
 
-        FileResource fileResource = createFileResourceWith(ORG_ID, FILE_NAME, MIME_TYPE);
+        FileResource fileResource = createFileResourceWith(orgId, fileName, mimeType);
         String fileResourceLocation = fileResourceHelper.createFileResource(mapLayerLocation, fileResource);
 
-        fileResourceHelper.uploadFileResource(fileResourceLocation, FILE_RESOURCE_PATH);
+        fileResourceHelper.uploadFileResource(fileResourceLocation, fileResourcePath);
 
         // Delete Map layer and summary
 //        ResourceDeletionBroker deleteResource = new ResourceDeletionBroker();
@@ -109,12 +122,12 @@ public class CreateFieldMapLayer extends AbstractApiBase {
 
         summary.setTitle("Enter Title here");
         summary.setText("Enter description text here");
-        ArrayList<ContributedMetadata> contributedMetadata = newArrayList();
+        ArrayList<ContributedMetadata> metadata = newArrayList();
         ContributedMetadata data = new ContributedMetadata();
         data.setName("test name");
         data.setValue("test value");
-        contributedMetadata.add(data);
-        summary.setMetadata(contributedMetadata);
+        metadata.add(data);
+        summary.setMetadata(metadata);
         summary.setDateCreated(JodaConverter.marshal(new DateTime()));
         return summary;
     }

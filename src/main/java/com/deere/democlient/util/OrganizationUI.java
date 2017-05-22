@@ -24,8 +24,7 @@ public class OrganizationUI {
 
     private void displayOrganizations(List<Organization> organizations) {
         for (int i = 0; i < organizations.size(); i++) {
-            int j = i + 1;
-            System.out.println("(" + j + ") " + organizations.get(i).getName());
+            System.out.println("(" + (i+1) + ") " + organizations.get(i).getName());
         }
     }
 
@@ -36,14 +35,12 @@ public class OrganizationUI {
             if (!in.hasNextInt()) {
                 System.out.println("Please enter an integer related to one of the organizations: ");
                 in.nextLine();
-            }
-            else {
+            } else {
                 int choice = in.nextInt();
                 if (choice > listSize || choice < 1) {
                     System.out.println("Please enter an integer related to one of the organizations:");
                     in.nextLine();
-                }
-                else {
+                } else {
                     return choice;
                 }
             }

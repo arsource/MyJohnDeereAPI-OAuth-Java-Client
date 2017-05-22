@@ -10,14 +10,14 @@ import com.deere.rest.RestResponse;
 public class CurrentTokenBroker extends AbstractApiBase {
 
     public Token getCurrentTokenDetails() {
-        RestRequest request = oauthRequestTo(getCurrentUserPath())
+        RestRequest request = oauthRequestTo(getCurrentTokenPath())
                 .method("GET")
                 .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
                 .build();
         final RestResponse response = request.fetchResponse();
         return read(response).as(Token.class);
     }
-    private String getCurrentUserPath() {
+    private String getCurrentTokenPath() {
         return apiCatalog.get("currentToken").getUri();
     }
 }

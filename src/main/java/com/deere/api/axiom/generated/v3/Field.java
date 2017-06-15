@@ -1,5 +1,6 @@
 package com.deere.api.axiom.generated.v3;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Field extends Resource {
@@ -23,12 +24,26 @@ public class Field extends Resource {
         this.clients = clients;
     }
 
+    public void setClient(Client client) {
+        clients = new Clients();
+        List<Client> clientList = new ArrayList<>();
+        clientList.add(client);
+        clients.setClients(clientList);
+    }
+
     public Farms getFarms() {
         return farms;
     }
 
     public void setFarms(Farms farms) {
         this.farms = farms;
+    }
+
+    public void setFarm(Farm farm) {
+        farms = new Farms();
+        List<Farm> farmList = new ArrayList<>();
+        farmList.add(farm);
+        farms.setFarms(farmList);
     }
 
     public Client getClient() throws DataNotEmbeddedException {

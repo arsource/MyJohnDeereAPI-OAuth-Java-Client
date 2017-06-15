@@ -182,6 +182,7 @@ public abstract class AbstractApiBase {
         try {
             final ObjectMapper objectMapper = getObjectMapper();
             return objectMapper.writeValueAsBytes(object);
+
         } catch (IOException e) {
             throw new RuntimeException("Failed to marshall the request input");
         }

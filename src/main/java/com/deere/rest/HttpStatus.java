@@ -186,6 +186,10 @@ public enum HttpStatus {
      * @see <a href="http://tools.ietf.org/html/rfc2817#section-6">Upgrading to TLS Within HTTP/1.1</a>
      */
     UPGRADE_REQUIRED(426),
+    /**
+     * {@code 429 Too Many Requests}.
+     */
+    HTTP_TOO_MANY_REQUESTS(429),
 
     // --- 5xx Server Error ---
 

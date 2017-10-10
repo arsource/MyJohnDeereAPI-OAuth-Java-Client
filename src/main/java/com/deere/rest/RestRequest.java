@@ -21,6 +21,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 
+import static com.deere.rest.HttpStatus.HTTP_TOO_MANY_REQUESTS;
 import static com.google.common.io.ByteStreams.copy;
 import static java.lang.Integer.valueOf;
 import static java.lang.System.getProperty;
@@ -124,6 +125,17 @@ public class RestRequest {
                 return redirectedRequest.fetchResponse();
             }
 
+            if(HTTP_TOO_MANY_REQUESTS.value() == responseCode) {
+                int seconds = Integer.valueOf(responseHeaders.valueOf("Retry-After"));
+                Thread.sleep(seconds * 1000);
+                final RestRequest retryRequest = new RestRequest(getMethod(),
+                        req.getURL().toString(),
+                        getClient(),
+                        getToken(),
+                        getBody(),
+                        getHeaders());
+                return retryRequest.fetchResponse();
+            }
         } catch (final Exception ex) {
             throw new RuntimeException(ex);
         }

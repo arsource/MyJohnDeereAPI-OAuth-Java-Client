@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 public class Upload extends AbstractApiBase {
     private String userOrganizations;
-    private Link fileUploadLink;
+    private String fileUploadLink;
     private String newFileLocation;
 
     public static void main(String[] arg ) throws Exception{
@@ -33,43 +33,12 @@ public class Upload extends AbstractApiBase {
         Upload upload = new Upload();
 
         upload.getCurrentUser();
-        upload.getUserOrganizations();
+        upload.fileUploadLink = upload.extractLinkFromOrganizations("uploadFile");
         upload.addFile();
         //uploadFile();
         upload.uploadFileInCHunks();
         upload.deleteUploadedFile();
 
-    }
-
-    public void getCurrentUser() {
-        //assume(apiCatalog.get("currentUser"), isNotNull());
-
-        final RestRequest currentUserRequest = oauthRequestTo(apiCatalog.get("currentUser").getUri())
-                .method("GET")
-                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
-                .build();
-
-        final RestResponse currentUserResponse = currentUserRequest.fetchResponse();
-
-        final Resource currentUser = read(currentUserResponse).as(User.class);
-
-        userOrganizations = linksFrom(currentUser).get("organizations").getUri();
-    }
-
-    public void getUserOrganizations() {
-        //assume(userOrganizations, isNotNull());
-
-        final RestRequest userOrganizationsRequest = oauthRequestTo(userOrganizations)
-                .method("GET")
-                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
-                .build();
-
-        final RestResponse userOrganizationsResponse = userOrganizationsRequest.fetchResponse();
-
-        final CollectionPage<Organization> organizations =
-                read(userOrganizationsResponse).as(new TypeReference<CollectionPage<Organization>>() {});
-
-        fileUploadLink = linksFrom(organizations.get(0)).get("uploadFile");
     }
 
     public void addFile() throws IOException {
@@ -79,7 +48,7 @@ public class Upload extends AbstractApiBase {
         apiFile.setName("greatFileFromDeere.zip");
 
         final ObjectMapper objectMapper = getObjectMapper();
-        final RestRequest newFileRequest = oauthRequestTo(fileUploadLink.getUri())
+        final RestRequest newFileRequest = oauthRequestTo(fileUploadLink)
                 .method("POST")
                 .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
                 .addHeader(new HttpHeader("Content-Type", V3_CONTENT_TYPE))

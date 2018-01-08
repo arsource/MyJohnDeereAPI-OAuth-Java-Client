@@ -1,9 +1,7 @@
 package com.deere.democlient.apis;
 
-import com.deere.api.axiom.generated.v3.ApiCatalog;
-import com.deere.api.axiom.generated.v3.File;
-import com.deere.api.axiom.generated.v3.Link;
-import com.deere.api.axiom.generated.v3.Resource;
+import com.deere.api.axiom.generated.v3.*;
+import com.deere.api.pagination.CollectionPage;
 import com.deere.api.pagination.CollectionPageDeserializerFactory;
 import com.deere.democlient.ApiCredentials;
 import com.deere.rest.*;
@@ -13,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.hamcrest.Matcher;
 
 import java.io.IOException;
@@ -39,6 +38,7 @@ public abstract class AbstractApiBase {
     protected final String filename = randomUUID().toString() + ".zip";
     protected Map<String, Link> apiCatalog = initializeApiCatalog();
     private ObjectMapper objectMapper;
+    private String userOrganizationLink;
 
     private Map<String, Link> initializeApiCatalog() {
         final RestRequest apiCatalogRequest = oauthRequestTo(baseUri)
@@ -198,5 +198,44 @@ public abstract class AbstractApiBase {
                     .withFactory(new CollectionPageDeserializerFactory(null)));
         }
         return objectMapper;
+    }
+
+    public void getCurrentUser() {
+
+        final RestRequest currentUserRequest = oauthRequestTo(apiCatalog.get("currentUser").getUri())
+                .method("GET")
+                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
+                .build();
+
+        final RestResponse currentUserResponse = currentUserRequest.fetchResponse();
+
+        final Resource currentUser = read(currentUserResponse).as(User.class);
+
+        userOrganizationLink = linksFrom(currentUser).get("organizations").getUri();
+
+    }
+
+    public String extractLinkFromOrganizations(String rel) {
+
+        final RestRequest userOrganizationsRequest = oauthRequestTo(userOrganizationLink)
+                .method("GET")
+                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
+                .build();
+
+        final RestResponse userOrganizationsResponse = userOrganizationsRequest.fetchResponse();
+
+        final CollectionPage<Organization> organizations =
+                read(userOrganizationsResponse).as(new TypeReference<CollectionPage<Organization>>() {
+                });
+
+        return linksFrom(organizations.get(0)).get(rel).getUri();
+    }
+
+    public String getUserOrganizationLink() {
+        return userOrganizationLink;
+    }
+
+    public void setUserOrganizationLink(String userOrganizationLink) {
+        this.userOrganizationLink = userOrganizationLink;
     }
 }

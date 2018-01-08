@@ -13,7 +13,7 @@ import java.io.IOException;
 public class MaMos extends AbstractApiBase {
 
     private String machinesLink;
-    private String userOrganizations;
+
     private String machineLink;
 
     public static void main(String[] arg) throws IOException {
@@ -25,44 +25,13 @@ public class MaMos extends AbstractApiBase {
         final RestResponse apiCatalogResponse = apiCatalogRequest.fetchResponse();
         MaMos maMos = new MaMos();
         maMos.getCurrentUser();
-        maMos.getUserOrganizations();
+        maMos.machinesLink = maMos.extractLinkFromOrganizations("machines");
         maMos.getMachinesByOrg();
         maMos.getMachineEngineHours();
         maMos.getMachineHoursOfOperation();
         maMos.getMachineLocationHistory();
         maMos.getMachineMeasurements();
         maMos.getMachineDeviceStateReport();
-    }
-
-    public void getCurrentUser() {
-
-        final RestRequest currentUserRequest = oauthRequestTo(apiCatalog.get("currentUser").getUri())
-                .method("GET")
-                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
-                .build();
-
-        final RestResponse currentUserResponse = currentUserRequest.fetchResponse();
-
-        final Resource currentUser = read(currentUserResponse).as(User.class);
-
-        userOrganizations = linksFrom(currentUser).get("organizations").getUri();
-
-    }
-
-    public void getUserOrganizations() {
-
-        final RestRequest userOrganizationsRequest = oauthRequestTo(userOrganizations)
-                .method("GET")
-                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
-                .build();
-
-        final RestResponse userOrganizationsResponse = userOrganizationsRequest.fetchResponse();
-
-        final CollectionPage<Organization> organizations =
-                read(userOrganizationsResponse).as(new TypeReference<CollectionPage<Organization>>() {
-                });
-
-        machinesLink = linksFrom(organizations.get(0)).get("machines").getUri();
     }
 
 

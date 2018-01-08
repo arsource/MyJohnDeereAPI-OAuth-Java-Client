@@ -28,42 +28,11 @@ public class Partnerships extends AbstractApiBase {
 
         Partnerships partnerships = new Partnerships();
         partnerships.getCurrentUser();
-        partnerships.getUserOrganizations();
+        partnerships.fromPartnershipLink = partnerships.extractLinkFromOrganizations("self");
         partnerships.setupPartnership();
         partnerships.getPartnerContactInvitation();
         partnerships.requestPermission();
         partnerships.deletePartnership();
-    }
-
-    public void getCurrentUser() {
-
-        final RestRequest currentUserRequest = oauthRequestTo(apiCatalog.get("currentUser").getUri())
-                .method("GET")
-                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
-                .build();
-
-        final RestResponse currentUserResponse = currentUserRequest.fetchResponse();
-
-        final Resource currentUser = read(currentUserResponse).as(User.class);
-
-        userOrganizations = linksFrom(currentUser).get("organizations").getUri();
-    }
-
-    public void getUserOrganizations() {
-
-        final RestRequest userOrganizationsRequest = oauthRequestTo(userOrganizations)
-                .method("GET")
-                .addHeader(new HttpHeader("Accept", V3_ACCEPTABLE_TYPE))
-                .build();
-
-        final RestResponse userOrganizationsResponse = userOrganizationsRequest.fetchResponse();
-
-        final CollectionPage<Organization> organizations =
-                read(userOrganizationsResponse).as(new TypeReference<CollectionPage<Organization>>() {
-                });
-
-        fromPartnershipLink = linksFrom(organizations.get(0)).get("self").getUri();
-        System.out.println("From Partnership Link : " + fromPartnershipLink);
     }
 
     public void setupPartnership() throws IOException {
